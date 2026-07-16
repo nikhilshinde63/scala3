@@ -2673,14 +2673,16 @@ object Build {
         ("scala-cli" -> s"gz+https://github.com/VirtusLab/scala-cli/releases/download/v$scalaCliLauncherVersion/scala-cli-aarch64-pc-linux.gz")
     )
 
+  // IBM Z / LinuxONE (s390x). No native GraalVM binary is available for s390x,
+  // so we fall back to the cross-platform JVM JAR (same as the universal `dist` target).
   lazy val `dist-linux-s390x` = project.in(file("dist/linux-s390x")).asDist
-    .settings(packageName := (dist / packageName).value + "-s390x-pc-linux")
+    .settings(packageName := (dist / packageName).value + "-s390x-ibm-linux")
     .settings(
       republishLibexecDir := (dist / republishLibexecDir).value,
       republishLibexecOverrides += (dist / baseDirectory).value / "libexec-native-overrides",
       republishFetchCoursier := (dist / republishFetchCoursier).value,
       republishLaunchers +=
-        ("scala-cli" -> s"gz+https://github.com/VirtusLab/scala-cli/releases/download/v$scalaCliLauncherVersion/scala-cli-s390x-pc-linux.gz")
+        ("scala-cli.jar" -> s"https://github.com/VirtusLab/scala-cli/releases/download/v$scalaCliLauncherVersion/scala-cli.jar")
     )
 
   private def customMimaReportBinaryIssues(issueFilterLocation: String) = mimaReportBinaryIssues := {
