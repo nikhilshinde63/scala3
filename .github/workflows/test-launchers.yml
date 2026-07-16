@@ -100,7 +100,7 @@ jobs:
 
   linux-s390x:
     name: Deploy and Test on Linux s390x architecture
-    runs-on: ubuntu-24.04-s390x  # Hypothetical runner; adjust based on actual availability
+    runs-on: S390X
     steps:
       - uses: actions/checkout@v7
       - name: Set up JDK 17
