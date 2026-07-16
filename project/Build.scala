@@ -626,6 +626,7 @@ object Build {
     `dist-win-x86_64`,
     `dist-linux-x86_64`,
     `dist-linux-aarch64`,
+    `dist-linux-s390x`,
   )
 
   // ==============================================================================================
@@ -2670,6 +2671,16 @@ object Build {
       republishFetchCoursier := (dist / republishFetchCoursier).value,
       republishLaunchers +=
         ("scala-cli" -> s"gz+https://github.com/VirtusLab/scala-cli/releases/download/v$scalaCliLauncherVersion/scala-cli-aarch64-pc-linux.gz")
+    )
+
+  lazy val `dist-linux-s390x` = project.in(file("dist/linux-s390x")).asDist
+    .settings(packageName := (dist / packageName).value + "-s390x-pc-linux")
+    .settings(
+      republishLibexecDir := (dist / republishLibexecDir).value,
+      republishLibexecOverrides += (dist / baseDirectory).value / "libexec-native-overrides",
+      republishFetchCoursier := (dist / republishFetchCoursier).value,
+      republishLaunchers +=
+        ("scala-cli" -> s"gz+https://github.com/VirtusLab/scala-cli/releases/download/v$scalaCliLauncherVersion/scala-cli-s390x-pc-linux.gz")
     )
 
   private def customMimaReportBinaryIssues(issueFilterLocation: String) = mimaReportBinaryIssues := {
