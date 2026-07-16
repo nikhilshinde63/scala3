@@ -80,6 +80,44 @@ jobs:
         run: sbt ";scala3-bootstrapped/compile ;scala3-compiler-bootstrapped/test"
         shell: cmd
 
+  # s390x (IBM Z / LinuxONE) bootstrapped compile + test.
+  # Requires a self-hosted runner registered with labels [self-hosted, Linux, s390x].
+  # On push/tag it always runs; on PRs it only runs when the PR body contains [test_s390x].
+  test_s390x:
+    name: Bootstrapped compile + test on Linux s390x
+    runs-on: [self-hosted, Linux, S390X]
+    if: "github.event_name == 'push'
+         || (
+           github.event_name == 'pull_request'
+           && !contains(github.event.pull_request.body, '[skip ci]')
+           && contains(github.event.pull_request.body, '[test_s390x]')
+         )"
+
+    steps:
+      - name: Reset existing repo
+        run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          git -c "http.https://github.com/.extraheader=" fetch --recurse-submodules=no "https://github.com/scala/scala3" && git reset --hard FETCH_HEAD || true
+
+      - name: Git Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up JDK 17 (Temurin s390x)
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          architecture: s390x
+          cache: 'sbt'
+
+      - uses: sbt/setup-sbt@v1
+
+      - name: Compile (bootstrapped)
+        run: ./project/scripts/sbt scala3-bootstrapped/compile
+
+      - name: Test (bootstrapped compiler)
+        run: ./project/scripts/sbt scala3-compiler-bootstrapped/test
+
   publish_release:
     permissions:
       contents: write  # for GH CLI to create a release
