@@ -39,6 +39,12 @@ on:
       win-x86_64-digest:
         description: The SHA256 of the uploaded artifact (`win x86-64`)
         value      : ${{ jobs.build.outputs.win-x86_64-digest }}
+      s390x-id:
+        description: ID of the `s390x` package from GitHub Artifacts (Authentication Required)
+        value      : ${{ jobs.build.outputs.s390x-id }}
+      s390x-digest:
+        description: The SHA256 of the uploaded artifact (`s390x`)
+        value      : ${{ jobs.build.outputs.s390x-digest }}
 
 
 jobs:
@@ -52,6 +58,8 @@ jobs:
       mac-aarch64-id   : ${{ steps.mac-aarch64.outputs.artifact-id }}
       win-x86_64-id    : ${{ steps.win-x86_64.outputs.artifact-id }}
       win-x86_64-digest: ${{ steps.win-x86_64-digest.outputs.digest }}
+      s390x-id    : ${{ steps.s390x.outputs.artifact-id }}
+      s390x-digest: ${{ steps.s390x-digest.outputs.digest }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-java@v5
@@ -72,6 +80,8 @@ jobs:
         run : ./project/scripts/sbt dist-mac-aarch64/Universal/stage
       - name: Build and pack the SDK (win x86-64)
         run : ./project/scripts/sbt dist-win-x86_64/Universal/stage
+      - name: Build and pack the SDK (s390x)
+        run : ./project/scripts/sbt dist-linux-s390x/Universal/stage
       - name: Upload zip archive to GitHub Artifact (universal)
         uses: actions/upload-artifact@v7
         id  : universal
@@ -113,3 +123,9 @@ jobs:
         run : |
           curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -o artifact.zip -L https://api.github.com/repos/scala/scala3/actions/artifacts/${{ steps.win-x86_64.outputs.artifact-id }}/zip
           echo "digest=$(sha256sum artifact.zip | cut -d " " -f 1)" >> "$GITHUB_OUTPUT"
+      - name: Upload zip archive to GitHub Artifact (linux s390x)
+        uses: actions/upload-artifact@v7
+        id  : s390x
+        with:
+          path: ./dist/linux-s390x/target/universal/stage
+          name: scala3-s390x-ibm-linux
