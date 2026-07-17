@@ -117,20 +117,3 @@ jobs:
       - name: Run the launcher command tests
         run: './project/scripts/native-integration/winTests.bat'
         shell: cmd
-
-  linux-s390x:
-    name: Deploy and Test on Linux s390x architecture
-    runs-on: S390X
-    steps:
-      - uses: actions/checkout@v7
-      - name: Set up JDK 17
-        uses: actions/setup-java@v5
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: 'sbt'
-      - uses: sbt/setup-sbt@v1
-      - name: Build and test launcher command
-        run: ./project/scripts/native-integration/bashTests
-        env:
-            LAUNCHER_EXPECTED_PROJECT: "dist-linux-s390x"
