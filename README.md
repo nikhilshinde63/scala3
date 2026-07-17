@@ -10,6 +10,7 @@ Building a Local Distribution
 =============================
 1. `sbt dist/Universal/packageBin`
 2. Find the newly-built distributions in `dist/target/`
+3. Test changes for testing GHA
 
 Code of Conduct
 ===============
